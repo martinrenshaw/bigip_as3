@@ -1,0 +1,114 @@
+---
+- name: Gather facts from the BIG-IP
+  hosts: my_dg
+  gather_facts: False
+  connection: local
+
+  vars:
+     provider: 
+       server: "{{ inventory_hostname }}"
+       password: "{{ dg_password }}"
+       user: root
+       transport: rest
+       validate_certs: False
+     plane: aaaaa
+
+  tasks:
+    - name: Collect all BIG-IP facts
+      bigip_device_facts:
+        gather_subset:
+          #- all
+          - self-ips
+          - interfaces
+          - vlans
+          - traffic-groups
+        provider: "{{ provider }}"
+      delegate_to: localhost
+
+    # - name: Find the active unit using traffic-group-1
+    #   bigip_command:
+    #     commands:
+    #      - show cm traffic-group traffic-group-1
+    #     provider: "{{ provider }}"
+    #   register: failover_state_tg1
+    #   ingnore_unreachable: yes
+    #   delegate_to: localhost
+
+    # - debug: msg='{{ failover_state_tg1.stdout_lines[0][8].split(' ')[2] }}'
+    #   register: failover_tg
+
+    # - debug: msg='{{ failover_tg }}'
+    
+    # - debug:
+    #     msg: "{{ failover_state.stdout[0] }}"
+
+    # - debug: 
+    #     msg: "This shows its working"
+    #   when: "'active' in failover_state.stdout[0]"
+    #   verbosity: 4
+    #   # look inside list at index 0 for the active command. Testing.
+
+  #   - block:
+  #     - name: Create node1
+  #       bigip_node:
+  #         provider: "{{ provider }}"
+  #         host: 10.10.10.10
+  #         name: 10.10.10.10
+
+  #     - name: Create node2
+  #       bigip_node:
+  #         provider: "{{ provider }}"
+  #         host: 10.10.10.11
+  #         name: 10.10.10.11
+
+  #     - name: Create pool
+  #       bigip_pool:
+  #         provider: "{{ provider }}"
+  #         lb_method: "round-robin"
+  #         monitors: http
+  #         name: pool1
+
+  #     - name: Add nodes to pool.
+  #       bigip_pool_member:
+  #         provider: "{{ provider }}"
+  #         port: "{{ item.port }}"
+  #         host: "{{ item.host }}"
+  #         name: "{{ item.host }}"
+  #         pool: pool1
+  #       loop:
+  #         - host: 10.10.10.10
+  #           port: 80
+  #         - host: 10.10.10.11
+  #           port: 443
+  #       ignore_errors: yes
+
+  #     - name: Create a virtual server
+  #       bigip_virtual_server:
+  #         provider: "{{ provider }}"
+  #         name: "vip1"
+  #         destination: "172.31.10.10"
+  #         port: 80
+  #         snat: "Automap"
+  #         all_profiles:
+  #           - http
+  #         pool: "pool1"
+  #       notify:
+  #         - Save the running configuration to disk
+  #         - Sync configuration from device to group
+
+  #     when: '"Failover active" in failover_state.stdout[0]'
+  #     delegate_to: localhost
+  #     # retrun from bigip_command is a list of strings !!
+
+  # handlers:
+  #   - name: Save the running configuration to disk
+  #     bigip_config:
+  #       provider: "{{ provider }}"
+  #       save: yes
+
+  #   - name: Sync configuration from device to group
+  #     bigip_configsync_action:
+  #       provider: "{{ provider }}"
+  #       device_group: "{{ dg_name }}"
+  #       sync_device_to_group: yes
+

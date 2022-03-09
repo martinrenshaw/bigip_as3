@@ -1,0 +1,38 @@
+
+                "{{ application }}": {
+                    "class": "Application",
+                    "{{ application }}-VS": {
+                        "class": "Service_HTTP",
+                        "virtualPort": {{ role_tenants[role_tenant].applications[application].virtualAddresses.port }},
+                        "virtualAddresses": ["{{ role_tenants[role_tenant].applications[application].virtualAddresses.destination }}"],
+                        "pool": "{{ application }}_http_pool"
+                    },
+                    "{{ application }}_http_pool": {
+                        "class": "Pool",
+                        "monitors": ["tcp"],
+                        "members": [
+                            {
+                                "servicePort": {{ role_tenants[role_tenant].applications[application].virtualAddresses.port }},
+                                "serverAddresses": [
+{%                              for member in role_tenants[role_tenant].applications[application].members %}
+{%                              if loop.length == 0 or loop.last == true %}
+                                    "{{ member }}"
+{%                              else %}
+                                    "{{ member }}",
+{%                              endif %}
+{%                              endfor %}
+                                ]
+                            }
+
+                        ]
+
+                    }
+
+
+
+{# 
+There is a virtual server named serviceMain.
+The template can use variables just like tasks do in previous exercises. In this case the virtual IP address is the private_ip from our inventory.
+There is a Pool named app_pool
+The jinja2 template can use a loop to grab all the pool members (which points to our web servers group that will be elaborated on below).
+#}

@@ -1,0 +1,7 @@
+---
+dg_name: "device-group-1"
+dg_password: "{{ vault_dg_password }}"
+
+
+user: 'root'
+server: "{{ failover_tg }}"

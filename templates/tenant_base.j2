@@ -1,0 +1,23 @@
+{
+    "class": "AS3",
+    "action": "deploy",
+    "persist": true,
+    "declaration": {
+        "class": "ADC",
+        "schemaVersion": "3.2.0",
+        "id": "testid",
+        "label": "test-label",
+        "remark": "test-remark",
+        "WorkshopExample":{
+            "class": "Tenant",
+            {{ as3_app_body }}
+        }
+    }
+}
+
+{# 
+WorkshopExmple will be the name of the tenant / f5 partition 
+"class": "Tenant", - this indicates that WorkshopExample is a Tenant.
+as3_app_body - this is a variable that will point to the second jinja2 template which is the actual WebApp.
+as3_app_body is a fact set in the as3.yml file from 
+#}

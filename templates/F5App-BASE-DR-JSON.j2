@@ -1,0 +1,44 @@
+{
+      "$schema": "https://raw.githubusercontent.com/F5Networks/f5-appsvcs-extension/master/schema/latest/as3-schema.json",
+       "class": "AS3",
+       "action": "dry-run",
+       "persist": true,
+       "declaration": {
+            "class": "ADC",
+            "schemaVersion": "3.24.0",
+            "id": "testid",
+            "label": "test-label",
+            "remark": "test-remark",
+{% for role_tenant in role_tenants %}
+            "{{ role_tenant }}-partition": {
+                "class": "Tenant",
+                "defaultRouteDomain": {{ role_tenants[role_tenant].route_domain }},
+{%     for application in role_tenants[role_tenant].applications %}
+{%         if role_tenants[role_tenant].applications[application].class == "Service_HTTPS" %}
+{%             include "F5App-HTTPS-JSON.j2" %}
+{%         elif role_tenants[role_tenant].applications[application].class == "Service_HTTP" %}
+{%             include "F5App-HTTP-JSON.j2" %}
+{%         else %}
+{%             include "F5App-TCP-JSON.j2" %}
+{%         endif %}
+{%         if loop.length == 0 or loop.last == true %}
+            }
+{%         else %}
+            },
+{%         endif %}
+{%     endfor %}
+{%     if loop.length == 0 or loop.last == true %}
+       }
+{%     else %}
+       },
+{%     endif %}
+{% endfor %}
+    }
+}
+
+{# 
+WorkshopExmple will be the name of the tenant / f5 partition 
+"class": "Tenant", - this indicates that WorkshopExample is a Tenant.
+as3_app_body - this is a variable that will point to the second jinja2 template which is the actual WebApp.
+as3_app_body is a fact set in the as3.yml file from 
+#}

@@ -1,0 +1,4 @@
+localhost ansible_connection=local
+
+[my_dg]
+192.168.122.223
