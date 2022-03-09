@@ -1,0 +1,26 @@
+  tasks:
+    - name: get bigip facts
+      bigip_device_facts:
+        gather_subset:
+          - interfaces
+          - vlans
+          - devices
+          - device-groups
+          - system-info
+        provider: "{{ provider }}"
+      register: bigip_facts
+      delegate_to: localhost
+      tags:
+        - get_facts
+
+    - name: Display bigip facts
+      debug:
+        var: bigip_facts
+         
+    - name: Display bigip facts hostnames info
+      debug:
+        msg: "System hostname: {{ bigip_facts['devices']['hostname[]'] }}"
+
+    - name: "Display bigip active unit"
+          debug:
+            msg: "{{ bigip_facts | json_query('devices[?failover_state==`active`].hostname') }}"
