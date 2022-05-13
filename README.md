@@ -1,13 +1,14 @@
 # f5_test1
 
-aaaaaa
-bbbbb
-asdasdas
-asdsdsa
-asd
-aishoai
-asda
-vbnhjm
+This is a repo that uses Gitlab/gitlab-runner to run Ansible in a Docker container. 
+>See `.gitlab-ci.yml` to follow the flow or to run the playbooks.
+
+# Basic flow
+- runs the as3-dr.yml (Dry Run), this calls the base template which has conditionals that calls other tmplates for the app type. The playbook also generates the json config so that it can be inspected. Ansible then posts the json to the BIGIP rest api with the DR flag to test it works.
+- runs the as3.yml, this calls the base template which has conditionals that calls other tmplates for the app type. The playbook also generates the json config so that it can be inspected. Ansible then posts the json to the BIGIP rest api.
+
+It builds a AS3 decliaration file from Jinja templates from a a vars data-model.
+
 
 ## To Do
 
